@@ -4,6 +4,7 @@
 
 import socket
 import threading
+import sys
 
 clients = {}  # Dictionary to store {username: client_socket}
 
@@ -60,15 +61,15 @@ def handle_client(client_socket, address):
             print(f"[SERVER] User '{username}' left.")
         client_socket.close()
 
-def start_server(host='127.0.0.1', port=8080):
+def start_server(host, port):
     """
     Starts chat server and listens for incoming connections.
 
     Args:
         host: IP address that server should listen on.
-              Defaults to 127.0.0.1 (localhost)
+              Defaults to IP to localhost (127.0.0.1)
         port: Port number that server should listen on.
-              Defaults to port 8080.
+              Defaults to port 8080
     """
 
     # Socket establishment
@@ -80,9 +81,23 @@ def start_server(host='127.0.0.1', port=8080):
     # Continuous checking and receiving of connections to server
     while True:
         client_socket, addr = server_socket.accept()
-        print(f"[NEW CONNECTION] {addr}")
+        print(f"[NEW CONN] {addr}")
         thread = threading.Thread(target=handle_client, args=(client_socket, addr))
         thread.start()
 
 if __name__ == "__main__":
-    start_server()
+    host = "127.0.0.1"  # Default IP
+    port = 8080       # Default port
+    arg = sys.argv
+
+    if len(arg) == 3:
+        host = arg[1]
+        try:
+            port = int(arg[2])
+        except ValueError:
+            print("[ERROR] Invalid port number. Using default port 8080.")
+    elif len(arg) > 3:
+        print("[USE] python server.py <ip> <port>")
+        sys.exit(1)
+
+    start_server(host, port)

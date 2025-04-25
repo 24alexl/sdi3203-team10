@@ -39,7 +39,7 @@ def receive_messages(sock, username):
             print(f"{RED}[ERROR] Disconnected from server.{RESET}")
             break
 
-def start_client(host='127.0.0.1', port=8080):
+def start_client(host, port):
     """
     Initialize client, connect to server, does username registration,
     opens thread for receiving message, manages sending messages with colored output.
@@ -93,4 +93,16 @@ def start_client(host='127.0.0.1', port=8080):
     client_socket.close()
 
 if __name__ == "__main__":
-    start_client()
+    host = '127.0.0.1'
+    port = 8080
+    if len(sys.argv) == 3:
+        host = sys.argv[1]  # '192.168.1.1'
+        try:
+            port = int(sys.argv[2]) # 9090
+        except ValueError:
+            print(f"{RED}[ERROR] Invalid port number. Using default port 8080.{RESET}")
+    elif len(sys.argv) > 3:
+        print(f"{YELLOW}[USAGE] python client.py <ip> <port>{RESET}")
+        sys.exit(1)
+
+    start_client(host, port)
